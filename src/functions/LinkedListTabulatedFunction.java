@@ -1,6 +1,7 @@
 package functions;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class LinkedListTabulatedFunction implements TabulatedFunction, Serializable
 {
@@ -51,13 +52,11 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
         throw new IllegalStateException("Cannot create TabulatedFunction: Too many points");
     }
 
-    public LinkedListTabulatedFunction(double leftX, double rightX, int pointsCount)
-    {
+    public LinkedListTabulatedFunction(double leftX, double rightX, int pointsCount) {
         this(leftX,rightX,new double[pointsCount]);
     }
 
-    public LinkedListTabulatedFunction(double leftX, double rightX, double[] values)
-    {
+    public LinkedListTabulatedFunction(double leftX, double rightX, double[] values) {
         if(leftX >= rightX)
         {
             throw new IllegalStateException("Cannot create TabulatedFunction: Left x should be greater than right x");
@@ -74,24 +73,24 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
         for (int i=0; i < pointsCount; i++)
         {
             curX = leftX + stepX * i;
-            iterator = addNodeToTail();
+            iterator = addNodeToTail(null);
             iterator.object.setX(curX);
             iterator.object.setY(values[i]);
         }
     }
     public LinkedListTabulatedFunction(FunctionPoint[] MassPoints){
-        this(MassPoints[0].getX(), MassPoints[MassPoints.length-1].getX(), MassPoints.length);
-
-        for (int i = 0; i < MassPoints.length - 1; i++){
-            if(MassPoints[i].getX() < MassPoints[i+1].getX()){
-                throw new IllegalArgumentException("Cannot create TabulatedFunction: Left x should be less than right x");
-            }
+        int i = MassPoints.length-1;
+        while(i > 0 && MassPoints[i].getX() < MassPoints[--i].getX());
+        if(i == 0)
+        {
+            throw new IllegalStateException("Cannot create TabulatedFunction: Left x should be greater than right x or number of values should be at least 2");
         }
-
-        for (int i = 0; i < MassPoints.length - 1; i++){
-            iterator = addNodeToTail();
-            iterator.object.setX(MassPoints[i].getX());
-            iterator.object.setY(MassPoints[i].getY());
+        head = new FunctionNode();
+        iterator = head;
+        pointsCount = MassPoints.length;
+        for(int j=0; j < pointsCount; j++)
+        {
+            addNodeToTail(MassPoints[j]);
         }
     }
 
@@ -208,9 +207,11 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
         }
         return iterator;
     }
-    private FunctionNode addNodeToTail() {
-        FunctionPoint newPoint = new FunctionPoint();
-        FunctionNode newNode = new FunctionNode(head.prevAddress, newPoint, head);
+    private FunctionNode addNodeToTail(FunctionPoint obj)
+    {
+        if(obj==null)
+            obj = new FunctionPoint();
+        FunctionNode newNode = new FunctionNode(head.prevAddress, obj, head);
         head.prevAddress.nextAddress = newNode;
         head.prevAddress = newNode;
         if (head.nextAddress == head)

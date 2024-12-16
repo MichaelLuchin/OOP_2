@@ -1,6 +1,7 @@
 package functions;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class ArrayTabulatedFunction implements TabulatedFunction, Serializable
 {
@@ -33,13 +34,14 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable
     public ArrayTabulatedFunction(FunctionPoint[] MassPoints){
         this(MassPoints[0].getX(), MassPoints[MassPoints.length-1].getX(), MassPoints.length);
 
-        for (int i = 0; i < MassPoints.length - 1; i++){
-            if(MassPoints[i].getX() < MassPoints[i+1].getX()){
+        for (int i = 1; i < MassPoints.length - 1; i++){
+            if(MassPoints[i-1].getX() > MassPoints[i].getX()){
                 throw new IllegalArgumentException("Cannot create TabulatedFunction: Left x should be less than right x");
             }
         }
         for (int i = 0; i < MassPoints.length;i++){
             point[i].setX(MassPoints[i].getX());
+            point[i].setY(MassPoints[i].getY());
         }
     }
 
