@@ -1,32 +1,63 @@
-import functions.*;
-import functions.basic.*;
-import functions.meta.Composition;
+import threads.*;
 
-import java.io.*;
+import static java.lang.Thread.sleep;
 
-public class Main {
-    public static void main(String[] args) throws InappropriateFunctionPointException, IOException {
-        Exp exp = new Exp();
-        TabulatedFunction lne = TabulatedFunctions.tabulate(new Composition(new Log(exp.getFunctionValue(1)),new Exp()), 0, 10, 11);
-        TabulatedFunction lneInputed;
+//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
+// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+public class Main
+{
 
-        try (Writer out = new FileWriter("out.txt")){
-            TabulatedFunctions.writeTabulatedFunction(lne, out);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static void main(String[] args)
+    {
+        complicatedThread();
+        //simpleThread();
+    }
+
+    private static void nonThread()
+    {
+        Task task = new Task();
+        while (task.getCounter()>0)
+        {
+            task.updateRand();
+            System.out.printf("Source: %f %f %f\n",
+                    task.getMinX(),
+                    task.getMaxX(),
+                    task.getDClock());
+            System.out.printf("Result: %f %f %f %f\n",
+                    task.getMinX(),
+                    task.getMaxX(),
+                    task.getDClock(),
+                    task.toWork());
         }
+    }
 
-        try (Reader in = new FileReader("out.txt")){
-            lneInputed = TabulatedFunctions.readTabulatedFunction(in);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private static void simpleThread()
+    {
+        Task task=new Task();
+        Thread generatorT = new Thread(new SimpleGenerator(task));
+        Thread integratorT = new Thread(new SimpleIntegrator(task));
+        generatorT.start();
+        integratorT.start();
+    }
+
+    private static void complicatedThread()
+    {
+        Task task=new Task();
+        ReaderWriterSemaphore semaphore =new ReaderWriterSemaphore();
+        Thread generatorT = new Generator(task,semaphore);
+        Thread integratorT = new Integrator(task,semaphore);
+        generatorT.start();
+        integratorT.start();
+
+        try
+        {
+            sleep(50);
+            generatorT.interrupt();
+            integratorT.interrupt();
         }
-
-        try (Writer out2 = new FileWriter("out2.txt")){
-            TabulatedFunctions.writeTabulatedFunction(lneInputed, out2);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        catch (InterruptedException e)
+        {
+            System.out.println(e.getMessage());
         }
-
     }
 }

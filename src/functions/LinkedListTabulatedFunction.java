@@ -1,7 +1,6 @@
 package functions;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 public class LinkedListTabulatedFunction implements TabulatedFunction, Serializable
 {
@@ -235,5 +234,65 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
         iterator.nextAddress = null;
         pointsCount--;
         return iterator;
+    }
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        iterator = head.nextAddress;
+        str.append("{").append(iterator.object.toString());
+
+        while (iterator.nextAddress != head) {
+            iterator = iterator.nextAddress;
+            str.append(", ").append(iterator.object.toString());
+        }
+        str.append("}");
+
+        return str.toString();
+    }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o instanceof LinkedListTabulatedFunction object)
+        {
+            if(object.pointsCount!=pointsCount)return false;
+            iterator=head.nextAddress;
+            object.iterator=object.head.nextAddress;
+            while (iterator != head) {
+                if(!iterator.object.equals(object.iterator.object)) return false;
+                iterator = iterator.nextAddress;
+                object.iterator = object.iterator.nextAddress;
+            }
+            return true;
+        }
+        else if(o instanceof ArrayTabulatedFunction) {
+            if(((TabulatedFunction)o).getPointsCount()!=pointsCount)return false;
+            iterator=head.nextAddress;
+            for(int j=0; j < pointsCount; j++, iterator=iterator.nextAddress)
+                if(!iterator.object.equals(((TabulatedFunction) o).getPoint(j))) return false;
+            return true;
+        }
+        return false;
+    }
+    public int hashCode() {
+        int hash = pointsCount;
+        iterator=head.nextAddress;
+        while (iterator != head) {
+            hash +=iterator.object.hashCode();
+            hash *= 907;
+            iterator = iterator.nextAddress;
+        }
+        return hash;
+    }
+    public Object clone() throws CloneNotSupportedException {
+        FunctionPoint arr[] =new FunctionPoint[pointsCount];
+        iterator=head.nextAddress;
+        for(int i=0; i < pointsCount; i++, iterator=iterator.nextAddress)
+            arr[i]=iterator.object;
+        try
+        {
+            return new LinkedListTabulatedFunction(arr);
+        }
+        catch (IllegalArgumentException e){
+            System.err.println(e.getMessage());
+        }
+        return super.clone();
     }
 }

@@ -157,4 +157,42 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable
             this.pointsCount++;
         }
     }
+    public String toString(){
+        StringBuilder str = new StringBuilder();
+        str.append("{").append(point[0].toString());
+        for(int i=1; i < pointsCount; i++)
+        {
+            str.append(", ").append(point[i].toString());
+        }
+        str.append("}");
+        return str.toString();
+    }
+    public boolean equals(Object o) {
+        if (this == o) return true; //Проверяем ссылки, чтоб не сравнивать с самим собой
+        if (o instanceof ArrayTabulatedFunction object){
+            if (pointsCount != object.pointsCount) return false;
+            for (int i = 0; i < pointsCount; i++) {
+                if (!point[i].equals(object.point[i])) return false;
+            }
+            return true;
+        }
+        else if (o instanceof LinkedListTabulatedFunction){
+            TabulatedFunction object = (TabulatedFunction) o;
+            if (pointsCount != object.getPointsCount()) return false;
+            for (int i = 0; i < pointsCount; i++) {
+                if (!point[i].equals(object.getPoint(i))) return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    public int hashCode() {
+        int hash = pointsCount; //Так как это инт, можно ничего не делать
+        for(int i=0; i < pointsCount; i++)
+            hash ^=point[i].hashCode()*i; //Ксорим с каждой точкой
+        return hash;
+    }
+    public Object clone() throws CloneNotSupportedException {
+        return new ArrayTabulatedFunction((FunctionPoint[]) point.clone());
+    }
 }

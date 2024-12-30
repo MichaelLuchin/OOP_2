@@ -1,7 +1,6 @@
 package functions;
 
 public interface TabulatedFunction extends Function {
-
     int getPointsCount();
     FunctionPoint getPoint(int index);
     double getPointX(int index);
@@ -10,4 +9,5 @@ public interface TabulatedFunction extends Function {
     void setPointY(int index, double y);
     void addPoint(FunctionPoint point) throws InappropriateFunctionPointException;
     void deletePoint(int index);
+    Object clone() throws CloneNotSupportedException;
 }
