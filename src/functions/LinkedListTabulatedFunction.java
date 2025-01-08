@@ -1,6 +1,8 @@
 package functions;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class LinkedListTabulatedFunction implements TabulatedFunction, Serializable
 {
@@ -78,11 +80,10 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
         }
     }
     public LinkedListTabulatedFunction(FunctionPoint[] MassPoints){
-        int i = MassPoints.length-1;
-        while(i > 0 && MassPoints[i].getX() < MassPoints[--i].getX());
-        if(i == 0)
-        {
-            throw new IllegalStateException("Cannot create TabulatedFunction: Left x should be greater than right x or number of values should be at least 2");
+        for (int i = 1; i < MassPoints.length - 1; i++){
+            if(MassPoints[i-1].getX() > MassPoints[i].getX()){
+                throw new IllegalArgumentException("Cannot create TabulatedFunction: Left x should be greater than right x or number of values should be at least 2");
+            }
         }
         head = new FunctionNode();
         iterator = head;
@@ -294,5 +295,54 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
             System.err.println(e.getMessage());
         }
         return super.clone();
+    }
+
+    public Iterator<FunctionPoint> iterator()
+    {
+        return new Iterator<>()
+        {
+            FunctionNode index = head;
+            @Override
+            public boolean hasNext()
+            {
+                return index.nextAddress != head;
+            }
+
+            @Override
+            public FunctionPoint next()
+            {
+                if(index.nextAddress == head) throw new NoSuchElementException();
+                index = index.nextAddress;
+                return index.object;
+            }
+
+            @Override
+            public void remove()
+            {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    public static class LinkedListTabulatedFunctionFactory implements TabulatedFunctionFactory
+    {
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(double leftX, double rightX, int pointsCount)
+        {
+            return new LinkedListTabulatedFunction(leftX, rightX, pointsCount);
+        }
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(double leftX, double rightX, double[] values)
+        {
+            return new LinkedListTabulatedFunction(leftX, rightX, values);
+        }
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(FunctionPoint[] arr)
+        {
+            return new LinkedListTabulatedFunction(arr);
+        }
     }
 }

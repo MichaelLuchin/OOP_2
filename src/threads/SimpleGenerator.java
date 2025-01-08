@@ -4,10 +4,10 @@ public class SimpleGenerator implements Runnable
 {
     private final Task task;
 
-    public SimpleGenerator(Task task)
-    {
+    public SimpleGenerator(Task task) {
         this.task = task;
     }
+
 
     @Override
     public void run() {

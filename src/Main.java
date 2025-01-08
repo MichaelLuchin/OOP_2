@@ -1,16 +1,47 @@
+import functions.*;
+import functions.basic.*;
 import threads.*;
 
 import static java.lang.Thread.sleep;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main
-{
-
+public class Main {
     public static void main(String[] args)
     {
-        complicatedThread();
-        //simpleThread();
+//        TabulatedFunction f = new LinkedListTabulatedFunction(10,20,11);
+//        for (FunctionPoint p : f) {
+//            System.out.println(p);
+//        }
+//        Function f = new Cos();
+//        TabulatedFunction tf;
+//        tf = TabulatedFunctions.tabulate(f, 0, Math.PI, 11);
+//        System.out.println(tf.getClass());
+//
+//        TabulatedFunctions.setTabulatedFunctionFactory(new LinkedListTabulatedFunction.LinkedListTabulatedFunctionFactory());
+//        tf = TabulatedFunctions.tabulate(f, 0, Math.PI, 11);
+//        System.out.println(tf.getClass());
+//
+//        TabulatedFunctions.setTabulatedFunctionFactory(new ArrayTabulatedFunction.ArrayTabulatedFunctionFactory());
+//        tf = TabulatedFunctions.tabulate(f, 0, Math.PI, 11);
+//        System.out.println(tf.getClass());
+
+        TabulatedFunction f;
+
+        f = TabulatedFunctions.createTabulatedFunction(ArrayTabulatedFunction.class, 0, 10, 3);
+        System.out.println(f.getClass());
+        System.out.println(f);
+
+        f = TabulatedFunctions.createTabulatedFunction(ArrayTabulatedFunction.class, 0, 10, new double[] {0, 10});
+        System.out.println(f.getClass());
+        System.out.println(f);
+
+        f = TabulatedFunctions.createTabulatedFunction(LinkedListTabulatedFunction.class, new FunctionPoint[] {new FunctionPoint(0, 0), new FunctionPoint(10, 10)});
+        System.out.println(f.getClass());
+        System.out.println(f);
+
+        f = TabulatedFunctions.tabulate(LinkedListTabulatedFunction.class, new Sin(), 0, Math.PI, 11);
+        System.out.println(f.getClass());
+        System.out.println(f);
+
     }
 
     private static void nonThread()
@@ -33,7 +64,7 @@ public class Main
 
     private static void simpleThread()
     {
-        Task task=new Task();
+        Task task = new Task();
         Thread generatorT = new Thread(new SimpleGenerator(task));
         Thread integratorT = new Thread(new SimpleIntegrator(task));
         generatorT.start();

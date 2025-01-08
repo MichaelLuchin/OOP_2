@@ -1,7 +1,8 @@
 package functions;
 
 import java.io.Serializable;
-import java.util.Objects;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class ArrayTabulatedFunction implements TabulatedFunction, Serializable
 {
@@ -194,5 +195,52 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable
     }
     public Object clone() throws CloneNotSupportedException {
         return new ArrayTabulatedFunction((FunctionPoint[]) point.clone());
+    }
+
+    public Iterator<FunctionPoint> iterator()
+    {
+        return new Iterator<>()
+        {
+            private int index = 0;
+
+            @Override
+            public boolean hasNext()
+            {
+                return pointsCount > index;
+            }
+
+            @Override
+            public FunctionPoint next() {
+                if (pointsCount <= index) throw new NoSuchElementException();
+                return point[index++];
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    public static class ArrayTabulatedFunctionFactory implements TabulatedFunctionFactory
+    {
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(double leftX, double rightX, int pointsCount)
+        {
+            return new ArrayTabulatedFunction(leftX, rightX, pointsCount);
+        }
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(double leftX, double rightX, double[] values)
+        {
+            return new ArrayTabulatedFunction(leftX, rightX, values);
+        }
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(FunctionPoint[] arr)
+        {
+            return new ArrayTabulatedFunction(arr);
+        }
     }
 }

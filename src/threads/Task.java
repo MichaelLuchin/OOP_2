@@ -13,7 +13,9 @@ public class Task
     int counter;
     public boolean flag = false;
 
-    public Task(){this.counter = ThreadLocalRandom.current().nextInt(100,500);}
+    public Task(){
+        this.counter = ThreadLocalRandom.current().nextInt(100,500);
+    }
 
     public Task(Function f, double minX, double maxX, double dClock){
         this.f = f;
